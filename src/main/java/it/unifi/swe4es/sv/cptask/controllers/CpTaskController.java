@@ -1,5 +1,6 @@
 package it.unifi.swe4es.sv.cptask.controllers;
 
+import it.unifi.swe4es.sv.cptask.dto.BaseResponseDTO;
 import it.unifi.swe4es.sv.cptask.dto.NodeDTO;
 import it.unifi.swe4es.sv.cptask.mappers.NodeMapper;
 import it.unifi.swe4es.sv.cptask.models.Graph;
@@ -8,6 +9,7 @@ import it.unifi.swe4es.sv.cptask.models.NodeType;
 import it.unifi.swe4es.sv.cptask.services.CpTaskService;
 import it.unifi.swe4es.sv.cptask.services.GraphService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -94,7 +96,7 @@ public class CpTaskController {
   }
 
   @GetMapping("/demo3")
-  public Integer demo3() {
+  public ResponseEntity<BaseResponseDTO> demo3() {
     Node v1 = new Node("v1", 1, NodeType.REGULAR);
     Node v2 = new Node("v2", 1, NodeType.CONDITIONAL_BEGINNING);
     Node v3 = new Node("v3", 3, NodeType.REGULAR);
@@ -122,6 +124,9 @@ public class CpTaskController {
     graph.addDirectedArc(v8, v9);
     graph.addDirectedArc(v7, v9);
 
-    return cpTaskService.computeWorstCaseWorkload(graph);
+    final Integer worstCaseWorkload = cpTaskService.computeWorstCaseWorkload(graph);
+
+    return ResponseEntity.ok()
+            .body(new BaseResponseDTO(Integer.toString(worstCaseWorkload)));
   }
 }
