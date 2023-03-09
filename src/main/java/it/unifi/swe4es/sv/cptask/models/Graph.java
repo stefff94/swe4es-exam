@@ -1,6 +1,7 @@
 package it.unifi.swe4es.sv.cptask.models;
 
 import java.util.*;
+import java.util.stream.Stream;
 
 public class Graph {
 
@@ -14,8 +15,12 @@ public class Graph {
     this.adjList.putIfAbsent(n, new LinkedList<>());
   }
 
-  public void addAllNode(Node... nodes) {
-    Arrays.stream(nodes).forEach(n -> this.adjList.putIfAbsent(n, new LinkedList<>()));
+  public void addAllNodes(Node... nodes) {
+    addAllNodes(Arrays.stream(nodes));
+  }
+
+  public void addAllNodes(Stream<Node> nodes) {
+    nodes.forEach(n -> this.adjList.putIfAbsent(n, new LinkedList<>()));
   }
 
   public void removeNode(Node n) {

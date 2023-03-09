@@ -3,10 +3,9 @@ package it.unifi.swe4es.sv.cptask.controllers;
 import it.unifi.swe4es.sv.cptask.dto.BaseResponseDTO;
 import it.unifi.swe4es.sv.cptask.dto.NodeDTO;
 import it.unifi.swe4es.sv.cptask.mappers.NodeMapper;
-import it.unifi.swe4es.sv.cptask.models.Graph;
 import it.unifi.swe4es.sv.cptask.models.Node;
-import it.unifi.swe4es.sv.cptask.models.NodeType;
 import it.unifi.swe4es.sv.cptask.services.CpTaskService;
+import it.unifi.swe4es.sv.cptask.services.DemoGraphService;
 import it.unifi.swe4es.sv.cptask.services.GraphService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -24,107 +23,54 @@ public class CpTaskController {
 
   private final GraphService graphService;
   private final CpTaskService cpTaskService;
-
+  private final DemoGraphService demoGraphService;
   @Autowired
-  public CpTaskController(GraphService graphService, CpTaskService cpTaskService) {
+  public CpTaskController(GraphService graphService,
+                          CpTaskService cpTaskService,
+                          DemoGraphService demoGraphService) {
+
     this.graphService = graphService;
     this.cpTaskService = cpTaskService;
+    this.demoGraphService = demoGraphService;
   }
 
-  @GetMapping("/demo")
-  public List<NodeDTO> demo() {
-    Node v1 = new Node("v1", 1, NodeType.REGULAR);
-    Node v2 = new Node("v2", 1, NodeType.CONDITIONAL_BEGINNING);
-    Node v3 = new Node("v3", 3, NodeType.REGULAR);
-    Node v4 = new Node("v4", 4, NodeType.REGULAR);
-    Node v5 = new Node("v5", 2, NodeType.REGULAR);
-    Node v6 = new Node("v6", 0, NodeType.CONDITIONAL_END);
-    Node v7 = new Node("v7", 1, NodeType.REGULAR);
-    Node v8 = new Node("v8", 1, NodeType.REGULAR);
-    Node v9 = new Node("v9", 1, NodeType.REGULAR);
-
-    Graph graph = new Graph();
-
-    graph.addAllNode(v1, v2, v3, v4, v5, v6, v7, v8, v9);
-
-    graph.addDirectedArc(v1, v2);
-    graph.addDirectedArc(v1, v5);
-    graph.addDirectedArc(v2, v3);
-    graph.addDirectedArc(v2, v4);
-    graph.addDirectedArc(v4, v6);
-    graph.addDirectedArc(v3, v6);
-    graph.addDirectedArc(v5, v8);
-    graph.addDirectedArc(v5, v7);
-    graph.addDirectedArc(v6, v7);
-    graph.addDirectedArc(v6, v8);
-    graph.addDirectedArc(v8, v9);
-    graph.addDirectedArc(v7, v9);
-
-    return graphService.topologicalSort(graph).stream()
+  @GetMapping("/top-sort-demo")
+  public ResponseEntity<List<NodeDTO>> topSortDemo() {
+    List<NodeDTO> topologicalSort = graphService.topologicalSort(demoGraphService.getDemoGraph())
+            .stream()
             .map(NodeMapper.INSTANCE::toDTO)
             .collect(Collectors.toList());
+
+    return ResponseEntity.ok()
+            .body(topologicalSort);
   }
 
-  @GetMapping("/demo2")
-  public NodeDTO demo2() {
-    Node v1 = new Node("v1", 1, NodeType.REGULAR);
-    Node v2 = new Node("v2", 1, NodeType.CONDITIONAL_BEGINNING);
-    Node v3 = new Node("v3", 3, NodeType.REGULAR);
-    Node v4 = new Node("v4", 4, NodeType.REGULAR);
-    Node v5 = new Node("v5", 2, NodeType.REGULAR);
-    Node v6 = new Node("v6", 0, NodeType.CONDITIONAL_END);
-    Node v7 = new Node("v7", 1, NodeType.REGULAR);
-    Node v8 = new Node("v8", 1, NodeType.REGULAR);
-    Node v9 = new Node("v9", 10, NodeType.REGULAR);
+  @GetMapping("/max-volume-demo")
+  public ResponseEntity<BaseResponseDTO> maxVolumeDemo() {
+    List<String> range = Stream.of("set1", "set2", "set3").toList();
 
-    List<Node> nodes = Stream.of(v1, v2, v3).collect(Collectors.toList());
+    Set<Node> set1 = demoGraphService.getDemoNodes("v1", "v2", "v3").collect(Collectors.toSet());
+    Set<Node> set2 = demoGraphService.getDemoNodes("v4", "v5", "v6").collect(Collectors.toSet());
+    Set<Node> set3 = demoGraphService.getDemoNodes("v7", "v8", "v9").collect(Collectors.toSet());
 
-    Set<Node> set1 = Stream.of(v1, v2, v3).collect(Collectors.toCollection(HashSet::new));
-    Set<Node> set2 = Stream.of(v4, v5, v6).collect(Collectors.toCollection(HashSet::new));
-    Set<Node> set3 = Stream.of(v7, v8, v9).collect(Collectors.toCollection(HashSet::new));
-
-    Map<Node, Set<Node>> setMap = new HashMap<>() {{
-      put(v1, set1);
-      put(v2, set2);
-      put(v3, set3);
+    Map<String, Set<Node>> setMap = new HashMap<>() {{
+      put("set1", set1);
+      put("set2", set2);
+      put("set3", set3);
     }};
 
-    return nodes.stream()
+    String maxVolume = range.stream()
             .max(Comparator.comparing(n -> cpTaskService.computeWCET(setMap.get(n))))
-            .map(NodeMapper.INSTANCE::toDTO)
+            // .map(NodeMapper.INSTANCE::toDTO)
             .orElse(null);
+
+    return ResponseEntity.ok()
+            .body(new BaseResponseDTO(maxVolume));
   }
 
-  @GetMapping("/demo3")
-  public ResponseEntity<BaseResponseDTO> demo3() {
-    Node v1 = new Node("v1", 1, NodeType.REGULAR);
-    Node v2 = new Node("v2", 1, NodeType.CONDITIONAL_BEGINNING);
-    Node v3 = new Node("v3", 3, NodeType.REGULAR);
-    Node v4 = new Node("v4", 4, NodeType.REGULAR);
-    Node v5 = new Node("v5", 2, NodeType.REGULAR);
-    Node v6 = new Node("v6", 0, NodeType.CONDITIONAL_END);
-    Node v7 = new Node("v7", 1, NodeType.REGULAR);
-    Node v8 = new Node("v8", 1, NodeType.REGULAR);
-    Node v9 = new Node("v9", 1, NodeType.REGULAR);
-
-    Graph graph = new Graph();
-
-    graph.addAllNode(v1, v2, v3, v4, v5, v6, v7, v8, v9);
-
-    graph.addDirectedArc(v1, v2);
-    graph.addDirectedArc(v1, v5);
-    graph.addDirectedArc(v2, v3);
-    graph.addDirectedArc(v2, v4);
-    graph.addDirectedArc(v4, v6);
-    graph.addDirectedArc(v3, v6);
-    graph.addDirectedArc(v5, v8);
-    graph.addDirectedArc(v5, v7);
-    graph.addDirectedArc(v6, v7);
-    graph.addDirectedArc(v6, v8);
-    graph.addDirectedArc(v8, v9);
-    graph.addDirectedArc(v7, v9);
-
-    final Integer worstCaseWorkload = cpTaskService.computeWorstCaseWorkload(graph);
+  @GetMapping("/worst-case-workload-demo")
+  public ResponseEntity<BaseResponseDTO> worstCaseWorkloadDemo() {
+    final Integer worstCaseWorkload = cpTaskService.computeWorstCaseWorkload(demoGraphService.getDemoGraph());
 
     return ResponseEntity.ok()
             .body(new BaseResponseDTO(Integer.toString(worstCaseWorkload)));

@@ -4,7 +4,6 @@ import it.unifi.swe4es.sv.cptask.models.Graph;
 import it.unifi.swe4es.sv.cptask.models.Node;
 import it.unifi.swe4es.sv.cptask.models.NodeType;
 import it.unifi.swe4es.sv.cptask.services.GraphService;
-import org.jgrapht.graph.SimpleDirectedWeightedGraph;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -33,7 +32,7 @@ public class DemoController {
 
     Graph graph = new Graph();
 
-    graph.addAllNode(six, five, four, three, two, one, zero);
+    graph.addAllNodes(six, five, four, three, two, one, zero);
 
     graph.addDirectedArc(six, five);
     graph.addDirectedArc(six, four);
