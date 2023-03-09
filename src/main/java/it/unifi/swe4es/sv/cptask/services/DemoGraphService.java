@@ -15,7 +15,7 @@ import java.util.stream.Stream;
 public class DemoGraphService {
 
     private final Graph demoGraph;
-    Supplier<Stream<Node>> demoNodesSupplier;
+    private final Supplier<Stream<Node>> demoNodesSupplier;
 
     public DemoGraphService() {
         Node v1 = new Node("v1", 1, NodeType.REGULAR);
