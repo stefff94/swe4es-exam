@@ -1,61 +1,40 @@
 package it.unifi.swe4es.sv.cptask.models;
 
-import java.util.*;
-import java.util.stream.Stream;
+import jakarta.persistence.*;
 
+import java.util.Set;
+
+@Entity
+@Table(name = "graphs")
 public class Graph {
 
-  private final Map<Node, List<Node>> adjList;
+    @Id @GeneratedValue
+    private Long id;
+    private String name;
+    @OneToMany(mappedBy="graph")
+    private Set<GraphPath> graphPath;
 
-  public Graph() {
-    this.adjList = new HashMap<>();
-  }
-
-  public void addNode(Node n) {
-    this.adjList.putIfAbsent(n, new LinkedList<>());
-  }
-
-  public void addAllNodes(Node... nodes) {
-    addAllNodes(Arrays.stream(nodes));
-  }
-
-  public void addAllNodes(Stream<Node> nodes) {
-    nodes.forEach(n -> this.adjList.putIfAbsent(n, new LinkedList<>()));
-  }
-
-  public void removeNode(Node n) {
-    this.adjList.values().forEach(l -> l.remove(n));
-    this.adjList.remove(n);
-  }
-
-  public void addDirectedArc(Node from, Node to) {
-    if (this.adjList.containsKey(from) && this.adjList.get(from).stream().noneMatch(n -> n.equals(to))) {
-      this.adjList.get(from).add(to);
+    public Long getId() {
+        return id;
     }
-  }
 
-  public void removeDirectedArc(Node from, Node to) {
-    if (this.adjList.containsKey(from) && this.adjList.get(from).stream().anyMatch(n -> n.equals(to))) {
-      this.adjList.get(from).remove(to);
+    public void setId(Long id) {
+        this.id = id;
     }
-  }
 
-  public Set<Node> getNodes() {
-    return this.adjList.keySet();
-  }
+    public String getName() {
+        return name;
+    }
 
-  public List<Node> getAdjNodes(Node n) {
-    return this.adjList.get(n);
-  }
+    public void setName(String name) {
+        this.name = name;
+    }
 
-  public String printGraph() {
-    StringBuffer sb = new StringBuffer();
+    public Set<GraphPath> getGraphPath() {
+        return graphPath;
+    }
 
-    this.adjList.keySet().forEach(n -> {
-      sb.append(n);
-      sb.append(adjList.get(n));
-    });
-
-    return sb.toString();
-  }
+    public void setGraphPath(Set<GraphPath> graphPath) {
+        this.graphPath = graphPath;
+    }
 }

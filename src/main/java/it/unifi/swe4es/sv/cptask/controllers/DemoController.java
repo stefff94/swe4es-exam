@@ -1,7 +1,7 @@
 package it.unifi.swe4es.sv.cptask.controllers;
 
-import it.unifi.swe4es.sv.cptask.models.Graph;
-import it.unifi.swe4es.sv.cptask.models.Node;
+import it.unifi.swe4es.sv.cptask.dto.NodeDTO;
+import it.unifi.swe4es.sv.cptask.dto.GraphDTO;
 import it.unifi.swe4es.sv.cptask.models.NodeType;
 import it.unifi.swe4es.sv.cptask.services.GraphService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,16 +21,16 @@ public class DemoController {
   }
 
   @GetMapping
-  public List<Node> demo() {
-    Node six = new Node("6", 0, NodeType.REGULAR);
-    Node five = new Node("5", 0, NodeType.REGULAR);
-    Node four = new Node("4", 0, NodeType.REGULAR);
-    Node three = new Node("3", 0, NodeType.REGULAR);
-    Node two = new Node("2", 0, NodeType.REGULAR);
-    Node one = new Node("1", 0, NodeType.REGULAR);
-    Node zero = new Node("0", 0, NodeType.REGULAR);
+  public List<NodeDTO> demo() {
+    NodeDTO six = new NodeDTO("6", 0, NodeType.REGULAR);
+    NodeDTO five = new NodeDTO("5", 0, NodeType.REGULAR);
+    NodeDTO four = new NodeDTO("4", 0, NodeType.REGULAR);
+    NodeDTO three = new NodeDTO("3", 0, NodeType.REGULAR);
+    NodeDTO two = new NodeDTO("2", 0, NodeType.REGULAR);
+    NodeDTO one = new NodeDTO("1", 0, NodeType.REGULAR);
+    NodeDTO zero = new NodeDTO("0", 0, NodeType.REGULAR);
 
-    Graph graph = new Graph();
+    GraphDTO graph = new GraphDTO();
 
     graph.addAllNodes(six, five, four, three, two, one, zero);
 

@@ -1,64 +1,69 @@
 package it.unifi.swe4es.sv.cptask.models;
 
-import java.util.Objects;
+import jakarta.persistence.*;
 
+import java.util.Set;
+
+@Entity
+@Table(name = "nodes")
 public class Node {
 
-  private final String label;
-  private final Integer weight;
-  private final NodeType type;
-  private boolean visited;
+    @Id @GeneratedValue
+    private Long id;
+    private String label;
+    private Integer weight;
+    @Enumerated(EnumType.STRING)
+    private NodeType type;
+    @OneToMany(mappedBy = "node")
+    private Set<GraphPath> graphPaths;
+    @OneToMany(mappedBy = "node")
+    private Set<GraphPathElement> graphPathElements;
 
-  public Node(String label, Integer weight, NodeType type) {
-    this.label = label;
-    this.weight = weight;
-    this.type = type;
-    this.visited = false;
-  }
+    public Long getId() {
+        return id;
+    }
 
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
-    Node node = (Node) o;
-    return Objects.equals(label, node.label) && Objects.equals(weight, node.weight) && type == node.type;
-  }
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-  @Override
-  public int hashCode() {
-    return Objects.hash(label, weight, type);
-  }
+    public String getLabel() {
+        return label;
+    }
 
-  @Override
-  public String toString() {
-    return "Node{" +
-            "label='" + label + '\'' +
-            ", weight=" + weight +
-            ", type=" + type +
-            '}';
-  }
+    public void setLabel(String label) {
+        this.label = label;
+    }
 
-  public boolean isVisited() {
-    return visited;
-  }
+    public Integer getWeight() {
+        return weight;
+    }
 
-  public void setVisited(boolean visited) {
-    this.visited = visited;
-  }
+    public void setWeight(Integer weight) {
+        this.weight = weight;
+    }
 
-  public String getLabel() {
-    return label;
-  }
+    public NodeType getType() {
+        return type;
+    }
 
-  public Integer getWeight() {
-    return weight;
-  }
+    public void setType(NodeType type) {
+        this.type = type;
+    }
 
-  public NodeType getType() {
-    return type;
-  }
+    public Set<GraphPath> getGraphPaths() {
+        return graphPaths;
+    }
 
-  public boolean isBeginCondition() {
-    return this.type.equals(NodeType.CONDITIONAL_BEGINNING);
-  }
+    public void setGraphPaths(Set<GraphPath> graphPaths) {
+        this.graphPaths = graphPaths;
+    }
+
+    public Set<GraphPathElement> getGraphPathElements() {
+        return graphPathElements;
+    }
+
+    public void setGraphPathElements(Set<GraphPathElement> graphPathElements) {
+        this.graphPathElements = graphPathElements;
+    }
 }

@@ -2,8 +2,6 @@ package it.unifi.swe4es.sv.cptask.controllers;
 
 import it.unifi.swe4es.sv.cptask.dto.BaseResponseDTO;
 import it.unifi.swe4es.sv.cptask.dto.NodeDTO;
-import it.unifi.swe4es.sv.cptask.mappers.NodeMapper;
-import it.unifi.swe4es.sv.cptask.models.Node;
 import it.unifi.swe4es.sv.cptask.services.CpTaskService;
 import it.unifi.swe4es.sv.cptask.services.DemoGraphService;
 import it.unifi.swe4es.sv.cptask.services.GraphService;
@@ -36,10 +34,8 @@ public class CpTaskController {
 
   @GetMapping("/top-sort-demo")
   public ResponseEntity<List<NodeDTO>> topSortDemo() {
-    List<NodeDTO> topologicalSort = graphService.topologicalSort(demoGraphService.getDemoGraph())
-            .stream()
-            .map(NodeMapper.INSTANCE::toDTO)
-            .collect(Collectors.toList());
+
+    List<NodeDTO> topologicalSort = new ArrayList<>(graphService.topologicalSort(demoGraphService.getDemoGraph()));
 
     return ResponseEntity.ok()
             .body(topologicalSort);
@@ -49,11 +45,11 @@ public class CpTaskController {
   public ResponseEntity<BaseResponseDTO> maxVolumeDemo() {
     List<String> range = Stream.of("set1", "set2", "set3").toList();
 
-    Set<Node> set1 = demoGraphService.getDemoNodes("v1", "v2", "v3").collect(Collectors.toSet());
-    Set<Node> set2 = demoGraphService.getDemoNodes("v4", "v5", "v6").collect(Collectors.toSet());
-    Set<Node> set3 = demoGraphService.getDemoNodes("v7", "v8", "v9").collect(Collectors.toSet());
+    Set<NodeDTO> set1 = demoGraphService.getDemoNodes("v1", "v2", "v3").collect(Collectors.toSet());
+    Set<NodeDTO> set2 = demoGraphService.getDemoNodes("v4", "v5", "v6").collect(Collectors.toSet());
+    Set<NodeDTO> set3 = demoGraphService.getDemoNodes("v7", "v8", "v9").collect(Collectors.toSet());
 
-    Map<String, Set<Node>> setMap = new HashMap<>() {{
+    Map<String, Set<NodeDTO>> setMap = new HashMap<>() {{
       put("set1", set1);
       put("set2", set2);
       put("set3", set3);

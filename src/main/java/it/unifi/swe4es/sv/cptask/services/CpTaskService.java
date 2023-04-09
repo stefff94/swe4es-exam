@@ -1,7 +1,7 @@
 package it.unifi.swe4es.sv.cptask.services;
 
-import it.unifi.swe4es.sv.cptask.models.Graph;
-import it.unifi.swe4es.sv.cptask.models.Node;
+import it.unifi.swe4es.sv.cptask.dto.NodeDTO;
+import it.unifi.swe4es.sv.cptask.dto.GraphDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,44 +19,44 @@ public class CpTaskService {
     this.graphService = graphService;
   }
 
-  public Integer computeWCET(Set<Node> nodes) {
+  public Integer computeWCET(Set<NodeDTO> nodes) {
     return nodes.stream()
-            .map(Node::getWeight)
+            .map(NodeDTO::getWeight)
             .mapToInt(Integer::intValue)
             .sum();
   }
 
-  public Integer computeWorstCaseWorkload(Graph graph) {
+  public Integer computeWorstCaseWorkload(GraphDTO graph) {
 
-    final List<Node> reversedTopologicalSort = new ArrayList<>(graphService.topologicalSort(graph));
+    final List<NodeDTO> reversedTopologicalSort = new ArrayList<>(graphService.topologicalSort(graph));
     Collections.reverse(reversedTopologicalSort);
 
-    Map<Node, Set<Node>> subgraphs = new HashMap<>();
+    Map<NodeDTO, Set<NodeDTO>> subgraphs = new HashMap<>();
 
-    Node sink = reversedTopologicalSort.get(0);
-    Node source = reversedTopologicalSort.get(reversedTopologicalSort.size() - 1);
+    NodeDTO sink = reversedTopologicalSort.get(0);
+    NodeDTO source = reversedTopologicalSort.get(reversedTopologicalSort.size() - 1);
     subgraphs.put(sink, Stream.of(sink).collect(Collectors.toCollection(HashSet::new)));
 
-    for (Node currentNode : reversedTopologicalSort) {
-      final List<Node> successors = graph.getAdjNodes(currentNode);
+    for (NodeDTO currentNode : reversedTopologicalSort) {
+      final List<NodeDTO> successors = graph.getAdjNodes(currentNode);
       if (successors.size() > 0) {
         if (currentNode.isBeginCondition()) {
           // per ogni successor v devo calcolare il C(S(v))
           // prendere il v che totalizza il C(S(v)) massimo
           // final OptionalInt max = successors.stream().map(s -> computeWCET(subgraphs.get(s))).mapToInt(Integer::intValue).max();
 
-          final Node vStar = successors.stream()
+          final NodeDTO vStar = successors.stream()
                   .max(Comparator.comparing(s -> computeWCET(subgraphs.get(s))))
                   .orElse(null);
 
-          Set<Node> tmpSet = new HashSet<>();
+          Set<NodeDTO> tmpSet = new HashSet<>();
           tmpSet.add(currentNode);
           tmpSet.addAll(subgraphs.get(vStar));
 
           subgraphs.put(currentNode, tmpSet);
 
         } else {
-          Set<Node> tmpSet = new HashSet<>();
+          Set<NodeDTO> tmpSet = new HashSet<>();
           successors.stream()
                   .map(subgraphs::get)
                   .forEach(tmpSet::addAll);

@@ -10,7 +10,9 @@ public interface NodeMapper {
 
   NodeMapper INSTANCE = Mappers.getMapper(NodeMapper.class);
 
-  NodeDTO toDTO(Node node);
+  // NodeDTO toDTO(Node node);
 
-  Node fromDTO(NodeDTO nodeDTO);
+  // Node fromDTO(NodeDTO nodeDTO);
+
+  NodeDTO toDTO(Node node);
 }
