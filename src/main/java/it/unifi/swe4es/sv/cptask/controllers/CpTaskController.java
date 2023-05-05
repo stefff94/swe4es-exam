@@ -1,5 +1,7 @@
 package it.unifi.swe4es.sv.cptask.controllers;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import it.unifi.swe4es.sv.cptask.dto.BaseResponseDTO;
 import it.unifi.swe4es.sv.cptask.dto.NodeDTO;
 import it.unifi.swe4es.sv.cptask.services.CpTaskService;
@@ -9,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.*;
@@ -70,5 +73,14 @@ public class CpTaskController {
 
     return ResponseEntity.ok()
             .body(new BaseResponseDTO(Integer.toString(worstCaseWorkload)));
+  }
+
+  @GetMapping("/demo-graph")
+  @ResponseBody
+  public ResponseEntity<String> getDemoGraph() throws JsonProcessingException {
+    String response =  new ObjectMapper().writeValueAsString(demoGraphService.getDemoGraph());
+    return ResponseEntity.ok()
+            //.body(demoGraphService.getDemoGraph());
+            .body(response);
   }
 }

@@ -1,14 +1,17 @@
 package it.unifi.swe4es.sv.cptask.models;
 
+
 import jakarta.persistence.*;
 
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "graphs")
 public class Graph {
 
-    @Id @GeneratedValue
+    @Id
+    @GeneratedValue
     private Long id;
     private String name;
     @OneToMany(mappedBy="graph")
@@ -36,5 +39,11 @@ public class Graph {
 
     public void setGraphPath(Set<GraphPath> graphPath) {
         this.graphPath = graphPath;
+    }
+
+    public Set<Node> getNodes() {
+        return this.graphPath.stream()
+                .map(GraphPath::getNode)
+                .collect(Collectors.toSet());
     }
 }

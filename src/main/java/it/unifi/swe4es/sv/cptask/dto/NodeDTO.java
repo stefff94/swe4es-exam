@@ -7,6 +7,7 @@ import java.util.Objects;
 
 public class NodeDTO {
 
+  private Long id;
   private String label;
   private Integer weight;
   private NodeType type;
@@ -21,6 +22,14 @@ public class NodeDTO {
     this.weight = weight;
     this.type = type;
     this.visited = false;
+  }
+
+  public Long getId() {
+    return id;
+  }
+
+  public void setId(Long id) {
+    this.id = id;
   }
 
   public String getLabel() {

@@ -1,15 +1,35 @@
 package it.unifi.swe4es.sv.cptask.dto;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.util.*;
 import java.util.stream.Stream;
 
 public class GraphDTO {
 
+  @JsonIgnore
+  private String name;
   private final Map<NodeDTO, List<NodeDTO>> adjList;
 
   public GraphDTO() {
     this.adjList = new HashMap<>();
+  }
+
+  public GraphDTO(Map<NodeDTO, List<NodeDTO>> adjList) {
+    this.adjList = adjList;
+  }
+
+  public String getName() {
+    return name;
+  }
+
+  public void setName(String name) {
+    this.name = name;
+  }
+
+  public Map<NodeDTO, List<NodeDTO>> getAdjList() {
+    return adjList;
   }
 
   public void addNode(NodeDTO n) {
@@ -41,6 +61,7 @@ public class GraphDTO {
     }
   }
 
+  @JsonIgnore
   public Set<NodeDTO> getNodes() {
     return this.adjList.keySet();
   }

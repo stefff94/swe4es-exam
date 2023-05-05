@@ -11,10 +11,10 @@ public class GraphPath {
     @Id @GeneratedValue
     private Long id;
     @ManyToOne
-    @JoinColumn(name = "graph_id", nullable = false)
+    @JoinColumn(name = "graph_id")
     private Graph graph;
     @ManyToOne
-    @JoinColumn(name = "node_id", nullable = false)
+    @JoinColumn(name = "node_id")
     private Node node;
     @OneToMany(mappedBy = "graphPath")
     private Set<GraphPathElement> elements;

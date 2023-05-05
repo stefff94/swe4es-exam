@@ -2,13 +2,19 @@ package it.unifi.swe4es.sv.cptask.services;
 
 import it.unifi.swe4es.sv.cptask.dto.NodeDTO;
 import it.unifi.swe4es.sv.cptask.dto.GraphDTO;
+import it.unifi.swe4es.sv.cptask.mappers.GraphMapper;
 import it.unifi.swe4es.sv.cptask.models.Graph;
+import it.unifi.swe4es.sv.cptask.models.Node;
 import it.unifi.swe4es.sv.cptask.repositories.GraphRepository;
+import it.unifi.swe4es.sv.cptask.repositories.NodeRepository;
+import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Stack;
 
 @Service
@@ -16,9 +22,15 @@ public class GraphService {
 
   private final GraphRepository graphRepository;
 
+  private final NodeService nodeService;
+
+  private final GraphPathService graphPathService;
+
   @Autowired
-  public GraphService(GraphRepository graphRepository) {
+  public GraphService(GraphRepository graphRepository, NodeService nodeService, GraphPathService graphPathService) {
     this.graphRepository = graphRepository;
+    this.nodeService = nodeService;
+    this.graphPathService = graphPathService;
   }
 
   /**
@@ -69,8 +81,18 @@ public class GraphService {
 
   }
 
-  public Graph insertNewGraph(Graph graph){
-    return graphRepository.save(graph);
+  public Graph getGraph(Long id) {
+    return graphRepository.findById(id).orElse(null);
+  }
+
+  public Graph insertNewGraph(Graph graph) {
+    Graph savedGraph = graphRepository.save(graph);
+
+    graph.getGraphPath().forEach(gp-> gp.setGraph(savedGraph));
+
+    graph.getGraphPath().forEach(graphPathService::insertNewGraphPath);
+
+    return savedGraph;
   }
 
 }

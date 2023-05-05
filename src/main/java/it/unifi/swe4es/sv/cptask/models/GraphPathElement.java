@@ -9,10 +9,10 @@ public class GraphPathElement {
     @Id @GeneratedValue
     private Long id;
     @ManyToOne
-    @JoinColumn(name = "graph_path_id", nullable = false)
+    @JoinColumn(name = "graph_path_id")
     private GraphPath graphPath;
     @ManyToOne
-    @JoinColumn(name = "node_id", nullable = false)
+    @JoinColumn(name = "node_id")
     private Node node;
     private Integer ord;
 
