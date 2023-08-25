@@ -6,6 +6,7 @@ import org.springframework.data.repository.CrudRepository;
 
 import java.util.Optional;
 
+@Deprecated
 public interface NodeRepository extends CrudRepository<Node, Long> {
 
     Node findByLabelIgnoreCaseAndWeightAndType(String label, Integer weight, NodeType type);

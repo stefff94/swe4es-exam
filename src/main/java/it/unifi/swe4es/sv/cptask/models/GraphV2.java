@@ -1,23 +1,20 @@
 package it.unifi.swe4es.sv.cptask.models;
 
-
 // import jakarta.persistence.*;
 import javax.persistence.*;
 
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Entity
-@Table(name = "graphs")
-@Deprecated
-public class Graph {
+@Table(name = "graphs_v2")
+public class GraphV2 {
 
     @Id
     @GeneratedValue
     private Long id;
     private String name;
     @OneToMany(mappedBy="graph")
-    private Set<GraphPath> graphPath;
+    private Set<NodeV2> nodes;
 
     public Long getId() {
         return id;
@@ -35,17 +32,11 @@ public class Graph {
         this.name = name;
     }
 
-    public Set<GraphPath> getGraphPath() {
-        return graphPath;
+    public Set<NodeV2> getNodes() {
+        return nodes;
     }
 
-    public void setGraphPath(Set<GraphPath> graphPath) {
-        this.graphPath = graphPath;
-    }
-
-    public Set<Node> getNodes() {
-        return this.graphPath.stream()
-                .map(GraphPath::getNode)
-                .collect(Collectors.toSet());
+    public void setNodes(Set<NodeV2> nodes) {
+        this.nodes = nodes;
     }
 }

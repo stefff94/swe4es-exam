@@ -46,7 +46,7 @@ public class CpTaskController {
 
   @GetMapping("/max-volume-demo")
   public ResponseEntity<BaseResponseDTO> maxVolumeDemo() {
-    List<String> range = Stream.of("set1", "set2", "set3").toList();
+    List<String> range = Stream.of("set1", "set2", "set3").collect(Collectors.toList());
 
     Set<NodeDTO> set1 = demoGraphService.getDemoNodes("v1", "v2", "v3").collect(Collectors.toSet());
     Set<NodeDTO> set2 = demoGraphService.getDemoNodes("v4", "v5", "v6").collect(Collectors.toSet());
@@ -73,6 +73,14 @@ public class CpTaskController {
 
     return ResponseEntity.ok()
             .body(new BaseResponseDTO(Integer.toString(worstCaseWorkload)));
+  }
+
+  @GetMapping("/zk-bound-demo")
+  public ResponseEntity<BaseResponseDTO> zkBuondDemo() {
+    Integer zkBuond = cpTaskService.computeZKBuond(demoGraphService.getDemoGraph(), 4);
+
+    return ResponseEntity.ok()
+            .body(new BaseResponseDTO(Integer.toString(zkBuond)));
   }
 
   @GetMapping("/demo-graph")

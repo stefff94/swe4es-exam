@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Deprecated
 public class GraphPathService {
 
     private final GraphPathRepository graphPathRepository;
@@ -31,7 +32,7 @@ public class GraphPathService {
         GraphPath savedGraphPath = graphPathRepository.save(graphPath);
 
         graphPath.getElements().forEach(gpe -> gpe.setGraphPath(savedGraphPath));
-        graphPath.getElements().forEach(gpe -> gpe.setNode(savedNode));
+        //graphPath.getElements().forEach(gpe -> gpe.setNode(savedNode));
 
         graphPath.getElements().forEach(graphPathElementService::insertNewGraphPathElement);
 

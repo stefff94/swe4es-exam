@@ -1,14 +1,11 @@
 package it.unifi.swe4es.sv.cptask.models;
 
 // import jakarta.persistence.*;
-
 import javax.persistence.*;
-import java.util.Set;
 
 @Entity
-@Table(name = "nodes")
-@Deprecated
-public class Node {
+@Table(name = "nodes_v2")
+public class NodeV2 {
 
     @Id
     @GeneratedValue
@@ -17,10 +14,9 @@ public class Node {
     private Integer weight;
     @Enumerated(EnumType.STRING)
     private NodeType type;
-    @OneToMany(mappedBy = "node")
-    private Set<GraphPath> graphPaths;
-    @OneToMany(mappedBy = "node")
-    private Set<GraphPathElement> graphPathElements;
+    @ManyToOne
+    @JoinColumn(name = "graph_id")
+    private GraphV2 graph;
 
     public Long getId() {
         return id;
@@ -54,19 +50,11 @@ public class Node {
         this.type = type;
     }
 
-    public Set<GraphPath> getGraphPaths() {
-        return graphPaths;
+    public GraphV2 getGraph() {
+        return graph;
     }
 
-    public void setGraphPaths(Set<GraphPath> graphPaths) {
-        this.graphPaths = graphPaths;
-    }
-
-    public Set<GraphPathElement> getGraphPathElements() {
-        return graphPathElements;
-    }
-
-    public void setGraphPathElements(Set<GraphPathElement> graphPathElements) {
-        this.graphPathElements = graphPathElements;
+    public void setGraph(GraphV2 graph) {
+        this.graph = graph;
     }
 }

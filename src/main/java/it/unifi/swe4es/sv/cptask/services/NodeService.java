@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import java.util.Optional;
 
 @Service
+@Deprecated
 public class NodeService {
 
     private final NodeRepository nodeRepository;
@@ -34,5 +35,9 @@ public class NodeService {
                         .findByLabelIgnoreCaseAndWeightAndType(node.getLabel(), node.getWeight(), node.getType());
             }
         }
+    }
+
+    public Node simpleInsertNewNode(Node node) {
+        return nodeRepository.save(node);
     }
 }

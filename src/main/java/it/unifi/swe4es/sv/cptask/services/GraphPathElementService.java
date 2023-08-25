@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
+@Deprecated
 public class GraphPathElementService {
 
     private final GraphPathElementRepository graphPathElementRepository;

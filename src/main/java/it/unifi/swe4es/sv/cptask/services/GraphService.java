@@ -4,6 +4,7 @@ import it.unifi.swe4es.sv.cptask.dto.NodeDTO;
 import it.unifi.swe4es.sv.cptask.dto.GraphDTO;
 import it.unifi.swe4es.sv.cptask.mappers.GraphMapper;
 import it.unifi.swe4es.sv.cptask.models.Graph;
+import it.unifi.swe4es.sv.cptask.models.GraphV2;
 import it.unifi.swe4es.sv.cptask.models.Node;
 import it.unifi.swe4es.sv.cptask.repositories.GraphRepository;
 import it.unifi.swe4es.sv.cptask.repositories.NodeRepository;
@@ -18,6 +19,7 @@ import java.util.Optional;
 import java.util.Stack;
 
 @Service
+@Deprecated
 public class GraphService {
 
   private final GraphRepository graphRepository;

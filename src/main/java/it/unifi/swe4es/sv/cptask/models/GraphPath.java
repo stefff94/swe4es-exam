@@ -1,11 +1,13 @@
 package it.unifi.swe4es.sv.cptask.models;
 
-import jakarta.persistence.*;
+// import jakarta.persistence.*;
+import javax.persistence.*;
 
 import java.util.Set;
 
 @Entity
 @Table(name = "graph_paths")
+@Deprecated
 public class GraphPath {
 
     @Id @GeneratedValue
