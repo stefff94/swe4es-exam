@@ -15,7 +15,7 @@ public interface GraphMapper {
 
     GraphMapper INSTANCE = Mappers.getMapper(GraphMapper.class);
 
-    @Deprecated
+    /*@Deprecated
     default GraphDTO toDTO(Graph graph) {
         Map<NodeDTO, List<NodeDTO>> adjList = new HashMap<>();
 
@@ -36,15 +36,20 @@ public interface GraphMapper {
         }
 
         return new GraphDTO(adjList);
-    }
+    }*/
 
     default GraphDTO toDTO(GraphV2 graph) {
-        // toDo: implement this
+        GraphDTO graphDTO = new GraphDTO();
+        graphDTO.addAllNodes(graph.getNodes().stream().map(NodeMapper.INSTANCE::toDTO));
 
-        return null;
+        graph.getNodes().forEach(n -> n.getSuccesors().stream()
+                .map(NodeMapper.INSTANCE::toDTO)
+                .forEach(ns -> graphDTO.addDirectedArc(NodeMapper.INSTANCE.toDTO(n), ns)));
+
+        return graphDTO;
     }
 
-    @Deprecated
+    /*@Deprecated
     default Graph fromDTO(GraphDTO graphDTO) {
         Graph graph = new Graph();
 
@@ -74,11 +79,11 @@ public interface GraphMapper {
         graph.setGraphPath(graphPaths);
 
         return graph;
-    }
+    }*/
 
-    default GraphV2 fromDTOV2(GraphDTO graphDTO) {
+    /*default GraphV2 fromDTO(GraphDTO graphDTO) {
         //toDo: implement this
 
         return null;
-    }
+    }*/
 }

@@ -20,6 +20,7 @@ public class NodeService {
         this.nodeRepository = nodeRepository;
     }
 
+    @Deprecated
     public Node insertNewNode(Node node) {
         Optional<Node> savedNode = nodeRepository
                 .findNodeByLabelIgnoreCaseAndWeightAndType(node.getLabel(), node.getWeight(), node.getType());
@@ -37,6 +38,7 @@ public class NodeService {
         }
     }
 
+    @Deprecated
     public Node simpleInsertNewNode(Node node) {
         return nodeRepository.save(node);
     }

@@ -2,6 +2,8 @@ package it.unifi.swe4es.sv.cptask.models;
 
 // import jakarta.persistence.*;
 import javax.persistence.*;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "nodes_v2")
@@ -17,6 +19,9 @@ public class NodeV2 {
     @ManyToOne
     @JoinColumn(name = "graph_id")
     private GraphV2 graph;
+
+    @OneToMany(mappedBy = "from")
+    private Set<AdjList> adjListSet;
 
     public Long getId() {
         return id;
@@ -56,5 +61,17 @@ public class NodeV2 {
 
     public void setGraph(GraphV2 graph) {
         this.graph = graph;
+    }
+
+    public Set<AdjList> getAdjListSet() {
+        return adjListSet;
+    }
+
+    public void setAdjListSet(Set<AdjList> adjListSet) {
+        this.adjListSet = adjListSet;
+    }
+
+    public Set<NodeV2> getSuccesors() {
+        return this.adjListSet.stream().map(AdjList::getTo).collect(Collectors.toSet());
     }
 }

@@ -16,6 +16,7 @@ public class GraphPathElementService {
         this.graphPathElementRepository = graphPathElementRepository;
     }
 
+    @Deprecated
     public void insertNewGraphPathElement(GraphPathElement graphPathElement) {
         graphPathElementRepository.save(graphPathElement);
     }

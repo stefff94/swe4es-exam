@@ -24,6 +24,7 @@ public class GraphPathService {
         this.graphPathElementService = graphPathElementService;
     }
 
+    @Deprecated
     public void insertNewGraphPath(GraphPath graphPath) {
         Node savedNode = nodeService.insertNewNode(graphPath.getNode());
 

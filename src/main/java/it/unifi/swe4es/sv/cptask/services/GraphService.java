@@ -1,21 +1,14 @@
 package it.unifi.swe4es.sv.cptask.services;
 
-import it.unifi.swe4es.sv.cptask.dto.NodeDTO;
 import it.unifi.swe4es.sv.cptask.dto.GraphDTO;
-import it.unifi.swe4es.sv.cptask.mappers.GraphMapper;
+import it.unifi.swe4es.sv.cptask.dto.NodeDTO;
 import it.unifi.swe4es.sv.cptask.models.Graph;
-import it.unifi.swe4es.sv.cptask.models.GraphV2;
-import it.unifi.swe4es.sv.cptask.models.Node;
 import it.unifi.swe4es.sv.cptask.repositories.GraphRepository;
-import it.unifi.swe4es.sv.cptask.repositories.NodeRepository;
-import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.Stack;
 
 @Service
@@ -41,6 +34,7 @@ public class GraphService {
    * @param graph: given graph
    * @return the list of nodes that compose the desired topological sort
    */
+  @Deprecated
   public List<NodeDTO> topologicalSort(GraphDTO graph) {
 
     // initialization
@@ -69,6 +63,7 @@ public class GraphService {
    * @param node: current node
    * @param stack: stack to push sorted nodes
    */
+  @Deprecated
   private void topologicalSortUtil(GraphDTO graph, NodeDTO node, Stack<NodeDTO> stack) {
 
     node.setVisited(true);
@@ -83,10 +78,12 @@ public class GraphService {
 
   }
 
+  @Deprecated
   public Graph getGraph(Long id) {
     return graphRepository.findById(id).orElse(null);
   }
 
+  @Deprecated
   public Graph insertNewGraph(Graph graph) {
     Graph savedGraph = graphRepository.save(graph);
 

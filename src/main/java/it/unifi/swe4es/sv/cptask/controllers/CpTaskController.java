@@ -3,16 +3,15 @@ package it.unifi.swe4es.sv.cptask.controllers;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import it.unifi.swe4es.sv.cptask.dto.BaseResponseDTO;
+import it.unifi.swe4es.sv.cptask.dto.GraphDTO;
 import it.unifi.swe4es.sv.cptask.dto.NodeDTO;
+import it.unifi.swe4es.sv.cptask.mappers.GraphMapper;
 import it.unifi.swe4es.sv.cptask.services.CpTaskService;
 import it.unifi.swe4es.sv.cptask.services.DemoGraphService;
-import it.unifi.swe4es.sv.cptask.services.GraphService;
+import it.unifi.swe4es.sv.cptask.services.GraphV2Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -22,11 +21,11 @@ import java.util.stream.Stream;
 @RequestMapping("/api/v1/cp-task")
 public class CpTaskController {
 
-  private final GraphService graphService;
+  private final GraphV2Service graphService;
   private final CpTaskService cpTaskService;
   private final DemoGraphService demoGraphService;
   @Autowired
-  public CpTaskController(GraphService graphService,
+  public CpTaskController(GraphV2Service graphService,
                           CpTaskService cpTaskService,
                           DemoGraphService demoGraphService) {
 
@@ -39,6 +38,17 @@ public class CpTaskController {
   public ResponseEntity<List<NodeDTO>> topSortDemo() {
 
     List<NodeDTO> topologicalSort = new ArrayList<>(graphService.topologicalSort(demoGraphService.getDemoGraph()));
+
+    return ResponseEntity.ok()
+            .body(topologicalSort);
+  }
+
+  @GetMapping("/top-sort/{id}")
+  public ResponseEntity<List<NodeDTO>> topSort(@PathVariable Long id) {
+    GraphDTO graphDTO = GraphMapper.INSTANCE
+            .toDTO(graphService.getGraph(id));
+
+    List<NodeDTO> topologicalSort = new ArrayList<>(graphService.topologicalSort(graphDTO));
 
     return ResponseEntity.ok()
             .body(topologicalSort);
@@ -75,9 +85,35 @@ public class CpTaskController {
             .body(new BaseResponseDTO(Integer.toString(worstCaseWorkload)));
   }
 
+  @GetMapping("/worst-case-workload/{id}")
+  public ResponseEntity<BaseResponseDTO> worstCaseWorkload(@PathVariable Long id) {
+    GraphDTO graphDTO = GraphMapper.INSTANCE
+            .toDTO(graphService.getGraph(id));
+
+    final Integer worstCaseWorkload = cpTaskService.computeWorstCaseWorkload(graphDTO);
+
+    return ResponseEntity.ok()
+            .body(new BaseResponseDTO(Integer.toString(worstCaseWorkload)));
+  }
+
   @GetMapping("/zk-bound-demo")
   public ResponseEntity<BaseResponseDTO> zkBuondDemo() {
     Integer zkBuond = cpTaskService.computeZKBuond(demoGraphService.getDemoGraph(), 4);
+
+    return ResponseEntity.ok()
+            .body(new BaseResponseDTO(Integer.toString(zkBuond)));
+  }
+
+  @PostMapping("/zk-bound/{id}")
+  public ResponseEntity<BaseResponseDTO> zkBuond(@PathVariable Long id,
+                                                 @RequestParam(required = false) String m) {
+
+    GraphDTO graphDTO = GraphMapper.INSTANCE
+            .toDTO(graphService.getGraph(id));
+
+    Integer processors = Optional.of(Integer.parseInt(m)).orElse(0) != 0 ? Integer.parseInt(m) : 4;
+
+    Integer zkBuond = cpTaskService.computeZKBuond(graphDTO, processors);
 
     return ResponseEntity.ok()
             .body(new BaseResponseDTO(Integer.toString(zkBuond)));
@@ -87,8 +123,8 @@ public class CpTaskController {
   @ResponseBody
   public ResponseEntity<String> getDemoGraph() throws JsonProcessingException {
     String response =  new ObjectMapper().writeValueAsString(demoGraphService.getDemoGraph());
+
     return ResponseEntity.ok()
-            //.body(demoGraphService.getDemoGraph());
             .body(response);
   }
 }

@@ -12,10 +12,10 @@ import java.util.stream.Stream;
 @Service
 public class CpTaskService {
 
-  private final GraphService graphService;
+  private final GraphV2Service graphService;
 
   @Autowired
-  public CpTaskService(GraphService graphService) {
+  public CpTaskService(GraphV2Service graphService) {
     this.graphService = graphService;
   }
 
@@ -26,9 +26,9 @@ public class CpTaskService {
             .sum();
   }
 
-  public Integer computeWorstCaseWorkload(GraphDTO graph) {
+  public Integer computeWorstCaseWorkload(GraphDTO graphDTO) {
 
-    final List<NodeDTO> reversedTopologicalSort = new ArrayList<>(graphService.topologicalSort(graph));
+    final List<NodeDTO> reversedTopologicalSort = new ArrayList<>(graphService.topologicalSort(graphDTO));
     Collections.reverse(reversedTopologicalSort);
 
     Map<NodeDTO, Set<NodeDTO>> subgraphs = new HashMap<>();
@@ -38,8 +38,8 @@ public class CpTaskService {
     subgraphs.put(sink, Stream.of(sink).collect(Collectors.toCollection(HashSet::new)));
 
     for (NodeDTO currentNode : reversedTopologicalSort) {
-      final List<NodeDTO> successors = graph.getAdjNodes(currentNode);
-      if (successors.size() > 0) {
+      final List<NodeDTO> successors = graphDTO.getAdjNodes(currentNode);
+      if (!successors.isEmpty()) {
         if (currentNode.isBeginCondition()) {
           // per ogni successor v devo calcolare il C(S(v))
           // prendere il v che totalizza il C(S(v)) massimo
@@ -71,8 +71,8 @@ public class CpTaskService {
     return computeWCET(subgraphs.get(source));
   }
 
-  public Integer computeZKBuond(GraphDTO graph, Integer m) {
-    final List<NodeDTO> reversedTopologicalSort = new ArrayList<>(graphService.topologicalSort(graph));
+  public Integer computeZKBuond(GraphDTO graphDTO, Integer m) {
+    final List<NodeDTO> reversedTopologicalSort = new ArrayList<>(graphService.topologicalSort(graphDTO));
     Collections.reverse(reversedTopologicalSort);
 
     Map<NodeDTO, Set<NodeDTO>> s = new HashMap<>();
@@ -87,8 +87,8 @@ public class CpTaskService {
     f.put(sink, sink.getWeight());
 
     for (NodeDTO currentNode : reversedTopologicalSort) {
-      final List<NodeDTO> successors = graph.getAdjNodes(currentNode);
-      if (successors.size() > 0) {
+      final List<NodeDTO> successors = graphDTO.getAdjNodes(currentNode);
+      if (!successors.isEmpty()) {
         if (currentNode.isBeginCondition()) {
           // todo: implement
           // per ogni successor v devo calcolare il C(S(v))

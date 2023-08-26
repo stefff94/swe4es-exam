@@ -6,51 +6,28 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import it.unifi.swe4es.sv.cptask.deserializers.GraphDeserializer;
 import it.unifi.swe4es.sv.cptask.dto.GraphDTO;
-import it.unifi.swe4es.sv.cptask.dto.NodeDTO;
 import it.unifi.swe4es.sv.cptask.mappers.GraphMapper;
-import it.unifi.swe4es.sv.cptask.models.NodeType;
 import it.unifi.swe4es.sv.cptask.services.DemoGraphService;
 import it.unifi.swe4es.sv.cptask.services.EuleroService;
-import it.unifi.swe4es.sv.cptask.services.GraphService;
 import it.unifi.swe4es.sv.cptask.services.GraphV2Service;
-import org.oristool.eulero.modelgeneration.RandomGenerator;
-import org.oristool.eulero.modelgeneration.blocksettings.*;
-import org.oristool.eulero.modeling.Activity;
-import org.oristool.eulero.modeling.ActivityType;
-import org.oristool.eulero.modeling.DAG;
-import org.oristool.models.stpn.trees.StochasticTransitionFeature;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.*;
-import java.util.concurrent.ThreadLocalRandom;
-import java.util.concurrent.atomic.AtomicReference;
-
 @RestController
 @RequestMapping("/api/v1/graph")
 public class GraphController {
-
-    private final GraphService graphService;
-    private final GraphV2Service graphV2Service;
+    private final GraphV2Service graphService;
     private final DemoGraphService demoGraphService;
     private final EuleroService euleroService;
     @Autowired
-    public GraphController(GraphService graphService,
-                           GraphV2Service graphV2Service,
+    public GraphController(GraphV2Service graphService,
                            DemoGraphService demoGraphService,
                            EuleroService euleroService) {
-
         this.graphService = graphService;
-        this.graphV2Service = graphV2Service;
         this.demoGraphService = demoGraphService;
         this.euleroService = euleroService;
     }
-
-    /*@PostMapping("/new-node")
-    public NodeDTO newNode(@RequestBody Node node) {
-        return NodeMapper.INSTANCE.toDTO(graphService.insertNewNode(node));
-    }*/
 
     @GetMapping("{id}")
     public ResponseEntity<GraphDTO> getGraph(@PathVariable Long id) {
@@ -59,53 +36,42 @@ public class GraphController {
         return ResponseEntity.ok().body(graphDTO);
     }
 
-    /*@PostMapping("/new")
-    public ResponseEntity<GraphDTO> newGraph(@RequestBody GraphDTO graph) {
-        GraphDTO graphDTO = GraphMapper.INSTANCE.toDTO(
-                graphService.insertNewGraph(GraphMapper.INSTANCE.fromDTO(graph)));
-
-        return ResponseEntity.ok().body(graphDTO);
-
-    }*/
-
     @PostMapping("/new")
-    public ResponseEntity<GraphDTO> newGraph(@RequestBody String graphJson) throws JsonProcessingException {
-        /*GraphDTO graph = new ObjectMapper().readValue(graphJson, GraphDTO.class);
+    public ResponseEntity<Long> newGraph(@RequestBody(required = false) GraphDTO graphDTO) {
+        Long graphId;
 
-        GraphDTO graphDTO = GraphMapper.INSTANCE.toDTO(
-                graphService.insertNewGraph(GraphMapper.INSTANCE.fromDTO(graph)));*/
+        if (graphDTO != null) {
+            graphId = graphService.insertNewGraph(graphDTO);
+        } else {
+            graphId = graphService.insertNewGraph(demoGraphService.getDemoGraph());
+        }
 
-        GraphDTO graphDTO = GraphMapper.INSTANCE.toDTO(
-                graphService.insertNewGraph(GraphMapper.INSTANCE.fromDTO(demoGraphService.getDemoGraph())));
-
-        return ResponseEntity.ok().body(graphDTO);
-
+        return ResponseEntity.ok().body(graphId);
     }
 
-    @PostMapping("/newV2")
-    public ResponseEntity<GraphDTO> newGraphV2(@RequestBody String jsonGraph) throws JsonProcessingException {
-
-        // GraphDTO graphDTO = new ObjectMapper().readValue(jsonGraph, GraphDTO.class);
-
-
+    @PostMapping("/new/json")
+    public ResponseEntity<Long> newGraph(@RequestBody String jsonGraph) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
-        SimpleModule module =
-                new SimpleModule("GraphDeserializer", new Version(1, 0, 0, null, null, null));
+        SimpleModule module = new SimpleModule("GraphDeserializer",
+                new Version(1, 0, 0, null, null, null));
+
         module.addDeserializer(GraphDTO.class, new GraphDeserializer());
         mapper.registerModule(module);
         GraphDTO graphDTO = mapper.readValue(jsonGraph, GraphDTO.class);
 
-        // graphV2Service.insertNewGraph(demoGraphService.getDemoGraph());
+        Long graphId = graphService.insertNewGraph(graphDTO);
 
-        return ResponseEntity.ok().body(graphDTO);
+        return ResponseEntity.ok()
+                .body(graphId);
 
     }
 
-    public ResponseEntity<String> generateRandomGraph() {
-        //Todo: implement
-        graphV2Service.insertNewGraph(euleroService.generateRandomGraph());
+    @GetMapping("/random")
+    public ResponseEntity<Long> generateRandomGraph() {
+        Long graphId = graphService
+                .insertNewGraph(euleroService.generateRandomGraph());
 
-        return ResponseEntity.ok("todo");
+        return ResponseEntity.ok(graphId);
     }
 
     /*@GetMapping("/random")
