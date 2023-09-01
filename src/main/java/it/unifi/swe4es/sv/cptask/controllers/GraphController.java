@@ -71,6 +71,18 @@ public class GraphController {
         Long graphId = graphService
                 .insertNewGraph(euleroService.generateRandomGraph());
 
+        // graphId: 29
+
+        return ResponseEntity.ok(graphId);
+    }
+
+    @GetMapping("/demo")
+    public ResponseEntity<Long> generateDemoGraph() {
+        Long graphId = graphService
+                .insertNewGraph(euleroService.generateDemoGraph());
+
+        // graphId: 184
+
         return ResponseEntity.ok(graphId);
     }
 

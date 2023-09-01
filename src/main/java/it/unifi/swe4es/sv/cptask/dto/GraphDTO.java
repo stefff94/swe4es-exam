@@ -4,6 +4,7 @@ package it.unifi.swe4es.sv.cptask.dto;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class GraphDTO {
@@ -61,9 +62,28 @@ public class GraphDTO {
     }
   }
 
+  private boolean hasEnteringArc(NodeDTO node) {
+    boolean result = false;
+    for (NodeDTO n : this.getNodes()) {
+      if (this.adjList.get(n).stream().anyMatch(n1 -> n1.equals(node))) {
+        result = true;
+      }
+    }
+    return result;
+  }
+
   @JsonIgnore
   public Set<NodeDTO> getNodes() {
-    return this.adjList.keySet();
+    return this.getNodes(false);
+  }
+
+  @JsonIgnore
+  public Set<NodeDTO> getNodes(boolean withoutEnteringArcs) {
+    if (withoutEnteringArcs) {
+      return this.getNodes().stream().filter(n -> !hasEnteringArc(n)).collect(Collectors.toSet());
+    } else {
+      return this.adjList.keySet();
+    }
   }
 
   public List<NodeDTO> getAdjNodes(NodeDTO n) {

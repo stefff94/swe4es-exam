@@ -69,13 +69,13 @@ public class GraphV2Service {
         graph.getNodes().forEach(n -> n.setVisited(false));
 
         // graph.getNodes().forEach(n -> topologicalSortUtil(graph, n, stack));
-        for (NodeDTO n : graph.getNodes()) {
+        for (NodeDTO n : graph.getNodes(true)) {
             if (!n.isVisited()) {
                 topologicalSortUtil(graph, n, stack);
             }
         }
 
-        List<NodeDTO> result = new ArrayList<>(graph.getNodes().size());
+        List<NodeDTO> result = new ArrayList<>(graph.getNodes(true).size());
 
         while (!stack.empty()) {
             result.add(stack.pop());

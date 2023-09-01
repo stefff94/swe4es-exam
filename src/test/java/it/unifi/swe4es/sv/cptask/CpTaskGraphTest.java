@@ -1,5 +1,6 @@
 package it.unifi.swe4es.sv.cptask;
 
+import com.google.common.collect.Lists;
 import org.junit.Test;
 import org.oristool.eulero.modelgeneration.RandomGenerator;
 import org.oristool.eulero.modelgeneration.blocksettings.*;
@@ -185,5 +186,41 @@ public class CpTaskGraphTest {
         model.edges().forEach(e -> System.out.println("PRE: " + e.getPre() + " - POST: " + e.getPost()));
 
         System.out.println(model.yaml());
+    }
+
+    @Test
+    public void TASK_GRAPH_1(){
+        StochasticTransitionFeature f = StochasticTransitionFeature.newDeterministicInstance("2");
+        XOR xor = new XOR(
+                "Xor(v4, v3)",
+                List.of(
+                        new Simple("v4", f),
+                        new Simple("v3", f)
+                ),
+                List.of(0.5, 0.5)
+        );
+
+        Simple v5 = new Simple("v5", f);
+        Simple v7 = new Simple("v7", f);
+        Simple v8 = new Simple("v8", f);
+        DAG dag = DAG.empty("Dag");
+        dag.end().addPrecondition(v7, v8);
+        v8.addPrecondition(v5, xor);
+        v7.addPrecondition(v5, xor);
+        v5.addPrecondition(dag.begin());
+        xor.addPrecondition(dag.begin());
+
+        dag.setMin(dag.getMinBound(dag.end()));
+        dag.setMax(dag.getMaxBound(dag.end()));
+        dag.setActivities(Lists.newArrayList(v5, v7, v8, xor));
+
+        DAG seq = DAG.sequence("SEQ",
+                new Simple("v1", f),
+                dag,
+                new Simple("v9", f)
+        );
+
+        // return seq;
+        System.out.println("END");
     }
 }

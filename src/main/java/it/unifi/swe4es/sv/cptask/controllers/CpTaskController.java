@@ -98,10 +98,10 @@ public class CpTaskController {
 
   @GetMapping("/zk-bound-demo")
   public ResponseEntity<BaseResponseDTO> zkBuondDemo() {
-    Integer zkBuond = cpTaskService.computeZKBuond(demoGraphService.getDemoGraph(), 4);
+    Double zkBuond = cpTaskService.computeZKBuond(demoGraphService.getDemoGraph(), 4);
 
     return ResponseEntity.ok()
-            .body(new BaseResponseDTO(Integer.toString(zkBuond)));
+            .body(new BaseResponseDTO(Double.toString(zkBuond)));
   }
 
   @PostMapping("/zk-bound/{id}")
@@ -113,10 +113,10 @@ public class CpTaskController {
 
     Integer processors = Optional.of(Integer.parseInt(m)).orElse(0) != 0 ? Integer.parseInt(m) : 4;
 
-    Integer zkBuond = cpTaskService.computeZKBuond(graphDTO, processors);
+    Double zkBuond = cpTaskService.computeZKBuond(graphDTO, processors);
 
     return ResponseEntity.ok()
-            .body(new BaseResponseDTO(Integer.toString(zkBuond)));
+            .body(new BaseResponseDTO(Double.toString(zkBuond)));
   }
 
   @GetMapping("/demo-graph")

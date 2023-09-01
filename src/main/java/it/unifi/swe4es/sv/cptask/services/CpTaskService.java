@@ -71,26 +71,29 @@ public class CpTaskService {
     return computeWCET(subgraphs.get(source));
   }
 
-  public Integer computeZKBuond(GraphDTO graphDTO, Integer m) {
+  public Double computeZKBuond(GraphDTO graphDTO, Integer m) {
+    return this.computeZKBuond(graphDTO, m, true);
+  }
+
+  public Double computeZKBuond(GraphDTO graphDTO, Integer m, boolean improvedVersion) {
     final List<NodeDTO> reversedTopologicalSort = new ArrayList<>(graphService.topologicalSort(graphDTO));
     Collections.reverse(reversedTopologicalSort);
 
     Map<NodeDTO, Set<NodeDTO>> s = new HashMap<>();
     Map<NodeDTO, Set<NodeDTO>> t = new HashMap<>();
-    Map<NodeDTO, Integer> f = new HashMap<>();
+    Map<NodeDTO, Double> f = new HashMap<>();
 
     NodeDTO sink = reversedTopologicalSort.get(0);
     NodeDTO source = reversedTopologicalSort.get(reversedTopologicalSort.size() - 1);
 
     s.put(sink, Stream.of(sink).collect(Collectors.toCollection(HashSet::new)));
     t.put(sink, Stream.of(sink).collect(Collectors.toCollection(HashSet::new)));
-    f.put(sink, sink.getWeight());
+    f.put(sink, (double) sink.getWeight());
 
     for (NodeDTO currentNode : reversedTopologicalSort) {
       final List<NodeDTO> successors = graphDTO.getAdjNodes(currentNode);
       if (!successors.isEmpty()) {
         if (currentNode.isBeginCondition()) {
-          // todo: implement
           // per ogni successor v devo calcolare il C(S(v))
           // prendere il v che totalizza il C(S(v)) massimo
 
@@ -122,8 +125,6 @@ public class CpTaskService {
           f.put(currentNode, currentNode.getWeight() + f.get(uStar));
 
         } else {
-          // todo: implement
-
           // riga 15
           Set<NodeDTO> tmpSet = new HashSet<>();
           successors.stream()
@@ -138,14 +139,22 @@ public class CpTaskService {
           final NodeDTO uStar = successors.stream()
                   .max(Comparator.comparing(u1 -> {
 
-                    Integer summation = 0;
-                    for (NodeDTO w : successors) {
-                      if (!w.equals(u1)) {
-                        summation += (computeWCET(s.get(w)) - u1.getWeight()) / m;
+                    if (!improvedVersion) {
+                      double summation = 0.;
+                      for (NodeDTO w : successors) {
+                        if (!w.equals(u1)) {
+                          summation += (double) (computeWCET(s.get(w)) - u1.getWeight()) / m;
+                        }
                       }
-                    }
 
-                    return f.get(u1) + summation;
+                      return f.get(u1) + summation;
+                    } else {
+
+                      return f.get(u1) +
+                              (computeWCET(s.get(currentNode))
+                                      - computeWCET(s.get(u1))
+                                      - currentNode.getWeight()) / m;
+                    }
 
                   }))
                   .orElse(null);
@@ -158,11 +167,18 @@ public class CpTaskService {
           t.put(currentNode, tmpSet);
 
           // riga 19
-          Integer summation = 0;
-          for (NodeDTO w : successors) {
-            if (uStar != null && !w.equals(uStar)) {
-              summation += (computeWCET(s.get(w)) - uStar.getWeight()) / m;
+          double summation = 0;
+
+          if (!improvedVersion) {
+            for (NodeDTO w : successors) {
+              if (uStar != null && !w.equals(uStar)) {
+                summation += (double) (computeWCET(s.get(w)) - uStar.getWeight()) / m;
+              }
             }
+          } else {
+            summation = (double) (computeWCET(s.get(currentNode))
+                    - computeWCET(s.get(uStar))
+                    - currentNode.getWeight()) / m;
           }
 
           f.put(currentNode, currentNode.getWeight() + f.get(uStar) + summation);

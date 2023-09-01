@@ -1,5 +1,6 @@
 package it.unifi.swe4es.sv.cptask.services;
 
+import com.google.common.collect.Lists;
 import it.unifi.swe4es.sv.cptask.dto.GraphDTO;
 import it.unifi.swe4es.sv.cptask.dto.NodeDTO;
 import it.unifi.swe4es.sv.cptask.models.NodeType;
@@ -8,16 +9,11 @@ import org.oristool.eulero.modelgeneration.blocksettings.BlockTypeSetting;
 import org.oristool.eulero.modelgeneration.blocksettings.DAGBlockSetting;
 import org.oristool.eulero.modelgeneration.blocksettings.WellNestedBlockSetting;
 import org.oristool.eulero.modelgeneration.blocksettings.XORBlockSetting;
-import org.oristool.eulero.modeling.Activity;
-import org.oristool.eulero.modeling.ActivityType;
-import org.oristool.eulero.modeling.DAG;
+import org.oristool.eulero.modeling.*;
 import org.oristool.models.stpn.trees.StochasticTransitionFeature;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
 @Service
@@ -59,9 +55,12 @@ public class EuleroService {
     }
 
     private void buildCpTaskGraph(GraphDTO graphDTO, Activity activity) {
+        buildCpTaskGraph(graphDTO, activity, true);
+    }
+    private void buildCpTaskGraph(GraphDTO graphDTO, Activity activity, boolean randomWeights) {
         if (activity.type().equals(ActivityType.SIMPLE)) {
 
-            NodeDTO currentNode = generateOrGetNode(graphDTO.getNodes(), activity.name(), NodeType.REGULAR);
+            NodeDTO currentNode = generateOrGetNode(graphDTO.getNodes(), activity.name(), NodeType.REGULAR, randomWeights);
 
             graphDTO.addNode(currentNode);
 
@@ -69,9 +68,9 @@ public class EuleroService {
                 NodeDTO apNode;
 
                 if (ap.type().equals(ActivityType.XOR)) {
-                    apNode = generateOrGetNode(graphDTO.getNodes(), ap.name() + "_END", NodeType.CONDITIONAL_END);
+                    apNode = generateOrGetNode(graphDTO.getNodes(), ap.name() + "_END", NodeType.CONDITIONAL_END, randomWeights);
                 } else {
-                    apNode = generateOrGetNode(graphDTO.getNodes(), ap.name(), NodeType.REGULAR);
+                    apNode = generateOrGetNode(graphDTO.getNodes(), ap.name(), NodeType.REGULAR, randomWeights);
                 }
 
                 graphDTO.addNode(apNode);
@@ -82,9 +81,9 @@ public class EuleroService {
                 NodeDTO apNode;
 
                 if (ap.type().equals(ActivityType.XOR)) {
-                    apNode = generateOrGetNode(graphDTO.getNodes(), ap.name() + "_BEGIN", NodeType.CONDITIONAL_BEGINNING);
+                    apNode = generateOrGetNode(graphDTO.getNodes(), ap.name() + "_BEGIN", NodeType.CONDITIONAL_BEGINNING, randomWeights);
                 } else {
-                    apNode = generateOrGetNode(graphDTO.getNodes(), ap.name(), NodeType.REGULAR);
+                    apNode = generateOrGetNode(graphDTO.getNodes(), ap.name(), NodeType.REGULAR, randomWeights);
                 }
 
                 graphDTO.addNode(apNode);
@@ -92,14 +91,14 @@ public class EuleroService {
             });
 
         } else if (activity.type().equals(ActivityType.XOR)) {
-            NodeDTO xorBegin = generateOrGetNode(graphDTO.getNodes(), activity.name() + "_BEGIN", NodeType.CONDITIONAL_BEGINNING);
+            NodeDTO xorBegin = generateOrGetNode(graphDTO.getNodes(), activity.name() + "_BEGIN", NodeType.CONDITIONAL_BEGINNING, randomWeights);
             graphDTO.addNode(xorBegin);
 
-            NodeDTO xorEND = generateOrGetNode(graphDTO.getNodes(), activity.name() + "_END", NodeType.CONDITIONAL_END);
+            NodeDTO xorEND = generateOrGetNode(graphDTO.getNodes(), activity.name() + "_END", NodeType.CONDITIONAL_END, randomWeights);
             graphDTO.addNode(xorEND);
 
             activity.activities().forEach(xa -> {
-                NodeDTO xaNode = generateOrGetNode(graphDTO.getNodes(), xa.name(), NodeType.REGULAR);
+                NodeDTO xaNode = generateOrGetNode(graphDTO.getNodes(), xa.name(), NodeType.REGULAR, randomWeights);
                 graphDTO.addNode(xaNode);
                 graphDTO.addDirectedArc(xorBegin, xaNode);
                 graphDTO.addDirectedArc(xaNode, xorEND);
@@ -109,9 +108,9 @@ public class EuleroService {
                 NodeDTO apNode;
 
                 if (ap.type().equals(ActivityType.XOR)) {
-                    apNode = generateOrGetNode(graphDTO.getNodes(), ap.name() + "_END", NodeType.CONDITIONAL_END);
+                    apNode = generateOrGetNode(graphDTO.getNodes(), ap.name() + "_END", NodeType.CONDITIONAL_END, randomWeights);
                 } else {
-                    apNode = generateOrGetNode(graphDTO.getNodes(), ap.name(), NodeType.REGULAR);
+                    apNode = generateOrGetNode(graphDTO.getNodes(), ap.name(), NodeType.REGULAR, randomWeights);
                 }
 
                 graphDTO.addNode(apNode);
@@ -122,9 +121,9 @@ public class EuleroService {
                 NodeDTO apNode;
 
                 if (ap.type().equals(ActivityType.XOR)) {
-                    apNode = generateOrGetNode(graphDTO.getNodes(), ap.name() + "_BEGIN", NodeType.CONDITIONAL_BEGINNING);
+                    apNode = generateOrGetNode(graphDTO.getNodes(), ap.name() + "_BEGIN", NodeType.CONDITIONAL_BEGINNING, randomWeights);
                 } else {
-                    apNode = generateOrGetNode(graphDTO.getNodes(), ap.name(), NodeType.REGULAR);
+                    apNode = generateOrGetNode(graphDTO.getNodes(), ap.name(), NodeType.REGULAR, randomWeights);
                 }
 
                 graphDTO.addNode(apNode);
@@ -136,7 +135,7 @@ public class EuleroService {
         }
     }
 
-    private NodeDTO generateOrGetNode(Set<NodeDTO> nodeDTOList, String label, NodeType type) {
+    private NodeDTO generateOrGetNode(Set<NodeDTO> nodeDTOList, String label, NodeType type, boolean randomWeight) {
 
         if (label.contains("DAG") && label.contains("BEGIN")) {
             label = "SOURCE";
@@ -147,9 +146,89 @@ public class EuleroService {
         }
 
         String finalLabel = label;
+
+        Integer weight;
+        if (randomWeight) {
+            weight = ThreadLocalRandom.current().nextInt(0, 11);
+        } else {
+            weight = retrieveWeight(finalLabel);
+        }
+
         return nodeDTOList.stream()
                 .filter(n -> n.getLabel().equals(finalLabel))
                 .findFirst()
-                .orElse(new NodeDTO(label, ThreadLocalRandom.current().nextInt(0, 11), type));
+                .orElse(new NodeDTO(label, weight, type));
+    }
+
+    private Integer retrieveWeight(String label) {
+        int weight;
+
+        switch (label) {
+            case "Dag_BEGIN":
+            case "v8":
+            case "Dag_END":
+            case "v7":
+            case "Xor(v4, v3)_BEGIN":
+                weight = 1;
+                break;
+            case "v3":
+                weight = 3;
+                break;
+            case "v4":
+                weight = 4;
+                break;
+            case "v5":
+                weight = 2;
+                break;
+            case "Xor(v4, v3)_END":
+                weight = 0;
+                break;
+            default:
+                weight = 0;
+                break;
+        }
+
+        return weight;
+    }
+
+    public GraphDTO generateDemoGraph() {
+        StochasticTransitionFeature f = StochasticTransitionFeature.newDeterministicInstance("2");
+        XOR xor = new XOR(
+                "Xor(v4, v3)",
+                List.of(
+                        new Simple("v4", f),
+                        new Simple("v3", f)
+                ),
+                List.of(0.5, 0.5)
+        );
+
+        Simple v5 = new Simple("v5", f);
+        Simple v7 = new Simple("v7", f);
+        Simple v8 = new Simple("v8", f);
+
+        DAG dag = DAG.empty("Dag");
+        dag.end().addPrecondition(v7, v8);
+        v8.addPrecondition(v5, xor);
+        v7.addPrecondition(v5, xor);
+        v5.addPrecondition(dag.begin());
+        xor.addPrecondition(dag.begin());
+
+        dag.setMin(dag.getMinBound(dag.end()));
+        dag.setMax(dag.getMaxBound(dag.end()));
+        dag.setActivities(Lists.newArrayList(v5, v7, v8, xor));
+
+        /*DAG seq = DAG.sequence("SEQ",
+                new Simple("v1", f),
+                dag,
+                new Simple("v9", f)
+        );
+
+        return seq;*/
+
+        GraphDTO graphDTO = new GraphDTO();
+        graphDTO.setName(String.valueOf(UUID.randomUUID()));
+        dag.activities().forEach(a -> buildCpTaskGraph(graphDTO, a, false));
+
+        return graphDTO;
     }
 }
