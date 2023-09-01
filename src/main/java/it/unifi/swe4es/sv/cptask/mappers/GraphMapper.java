@@ -10,7 +10,7 @@ public interface GraphMapper {
 
     GraphMapper INSTANCE = Mappers.getMapper(GraphMapper.class);
 
-    default GraphDTO toDTO(GraphV2 graph) {
+    default GraphDTO toDTO(Graph graph) {
         GraphDTO graphDTO = new GraphDTO();
         graphDTO.addAllNodes(graph.getNodes().stream().map(NodeMapper.INSTANCE::toDTO));
 

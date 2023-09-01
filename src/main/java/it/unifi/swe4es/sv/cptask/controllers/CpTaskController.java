@@ -8,7 +8,7 @@ import it.unifi.swe4es.sv.cptask.dto.NodeDTO;
 import it.unifi.swe4es.sv.cptask.mappers.GraphMapper;
 import it.unifi.swe4es.sv.cptask.services.CpTaskService;
 import it.unifi.swe4es.sv.cptask.services.DemoGraphService;
-import it.unifi.swe4es.sv.cptask.services.GraphV2Service;
+import it.unifi.swe4es.sv.cptask.services.GraphService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,11 +21,11 @@ import java.util.stream.Stream;
 @RequestMapping("/api/v1/cp-task")
 public class CpTaskController {
 
-  private final GraphV2Service graphService;
+  private final GraphService graphService;
   private final CpTaskService cpTaskService;
   private final DemoGraphService demoGraphService;
   @Autowired
-  public CpTaskController(GraphV2Service graphService,
+  public CpTaskController(GraphService graphService,
                           CpTaskService cpTaskService,
                           DemoGraphService demoGraphService) {
 

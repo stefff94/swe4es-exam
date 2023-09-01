@@ -12,10 +12,10 @@ import java.util.stream.Stream;
 @Service
 public class CpTaskService {
 
-  private final GraphV2Service graphService;
+  private final GraphService graphService;
 
   @Autowired
-  public CpTaskService(GraphV2Service graphService) {
+  public CpTaskService(GraphService graphService) {
     this.graphService = graphService;
   }
 

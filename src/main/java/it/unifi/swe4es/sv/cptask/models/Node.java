@@ -6,8 +6,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Entity
-@Table(name = "nodes_v2")
-public class NodeV2 {
+@Table(name = "nodes")
+public class Node {
 
     @Id
     @GeneratedValue
@@ -18,7 +18,7 @@ public class NodeV2 {
     private NodeType type;
     @ManyToOne
     @JoinColumn(name = "graph_id")
-    private GraphV2 graph;
+    private Graph graph;
 
     @OneToMany(mappedBy = "from")
     private Set<AdjList> adjListSet;
@@ -55,11 +55,11 @@ public class NodeV2 {
         this.type = type;
     }
 
-    public GraphV2 getGraph() {
+    public Graph getGraph() {
         return graph;
     }
 
-    public void setGraph(GraphV2 graph) {
+    public void setGraph(Graph graph) {
         this.graph = graph;
     }
 
@@ -71,7 +71,7 @@ public class NodeV2 {
         this.adjListSet = adjListSet;
     }
 
-    public Set<NodeV2> getSuccesors() {
+    public Set<Node> getSuccesors() {
         return this.adjListSet.stream().map(AdjList::getTo).collect(Collectors.toSet());
     }
 }

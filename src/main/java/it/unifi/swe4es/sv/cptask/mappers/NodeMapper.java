@@ -1,7 +1,7 @@
 package it.unifi.swe4es.sv.cptask.mappers;
 
 import it.unifi.swe4es.sv.cptask.dto.NodeDTO;
-import it.unifi.swe4es.sv.cptask.models.NodeV2;
+import it.unifi.swe4es.sv.cptask.models.Node;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
@@ -9,6 +9,6 @@ import org.mapstruct.factory.Mappers;
 public interface NodeMapper {
 
   NodeMapper INSTANCE = Mappers.getMapper(NodeMapper.class);
-  NodeDTO toDTO(NodeV2 node);
+  NodeDTO toDTO(Node node);
 
 }

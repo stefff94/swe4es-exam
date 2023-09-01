@@ -1,9 +1,9 @@
 package it.unifi.swe4es.sv.cptask.repositories;
 
-import it.unifi.swe4es.sv.cptask.models.GraphV2;
+import it.unifi.swe4es.sv.cptask.models.Graph;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface GraphV2Repository extends CrudRepository<GraphV2, Long> {
+public interface GraphRepository extends CrudRepository<Graph, Long> {
 }

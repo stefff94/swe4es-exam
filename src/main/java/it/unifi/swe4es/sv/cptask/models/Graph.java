@@ -6,15 +6,15 @@ import javax.persistence.*;
 import java.util.Set;
 
 @Entity
-@Table(name = "graphs_v2")
-public class GraphV2 {
+@Table(name = "graphs")
+public class Graph {
 
     @Id
     @GeneratedValue
     private Long id;
     private String name;
     @OneToMany(mappedBy="graph")
-    private Set<NodeV2> nodes;
+    private Set<Node> nodes;
 
     public Long getId() {
         return id;
@@ -32,11 +32,11 @@ public class GraphV2 {
         this.name = name;
     }
 
-    public Set<NodeV2> getNodes() {
+    public Set<Node> getNodes() {
         return nodes;
     }
 
-    public void setNodes(Set<NodeV2> nodes) {
+    public void setNodes(Set<Node> nodes) {
         this.nodes = nodes;
     }
 }

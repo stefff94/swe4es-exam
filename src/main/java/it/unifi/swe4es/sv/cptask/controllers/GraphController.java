@@ -9,7 +9,7 @@ import it.unifi.swe4es.sv.cptask.dto.GraphDTO;
 import it.unifi.swe4es.sv.cptask.mappers.GraphMapper;
 import it.unifi.swe4es.sv.cptask.services.DemoGraphService;
 import it.unifi.swe4es.sv.cptask.services.EuleroService;
-import it.unifi.swe4es.sv.cptask.services.GraphV2Service;
+import it.unifi.swe4es.sv.cptask.services.GraphService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,11 +17,11 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/v1/graph")
 public class GraphController {
-    private final GraphV2Service graphService;
+    private final GraphService graphService;
     private final DemoGraphService demoGraphService;
     private final EuleroService euleroService;
     @Autowired
-    public GraphController(GraphV2Service graphService,
+    public GraphController(GraphService graphService,
                            DemoGraphService demoGraphService,
                            EuleroService euleroService) {
         this.graphService = graphService;

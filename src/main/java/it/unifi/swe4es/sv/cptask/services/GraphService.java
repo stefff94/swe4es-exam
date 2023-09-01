@@ -2,9 +2,9 @@ package it.unifi.swe4es.sv.cptask.services;
 
 import it.unifi.swe4es.sv.cptask.dto.GraphDTO;
 import it.unifi.swe4es.sv.cptask.dto.NodeDTO;
-import it.unifi.swe4es.sv.cptask.models.GraphV2;
-import it.unifi.swe4es.sv.cptask.models.NodeV2;
-import it.unifi.swe4es.sv.cptask.repositories.GraphV2Repository;
+import it.unifi.swe4es.sv.cptask.models.Graph;
+import it.unifi.swe4es.sv.cptask.models.Node;
+import it.unifi.swe4es.sv.cptask.repositories.GraphRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,43 +15,43 @@ import java.util.Stack;
 import java.util.stream.Collectors;
 
 @Service
-public class GraphV2Service {
+public class GraphService {
 
-    private final GraphV2Repository graphV2Repository;
+    private final GraphRepository graphRepository;
 
-    private final NodeV2Service nodeV2Service;
+    private final NodeService nodeService;
 
     private final AdjListService adjListService;
 
     @Autowired
-    public GraphV2Service(GraphV2Repository graphV2Repository, NodeV2Service nodeV2Service, AdjListService adjListService) {
-        this.graphV2Repository = graphV2Repository;
-        this.nodeV2Service = nodeV2Service;
+    public GraphService(GraphRepository graphRepository, NodeService nodeService, AdjListService adjListService) {
+        this.graphRepository = graphRepository;
+        this.nodeService = nodeService;
         this.adjListService = adjListService;
     }
 
-    public GraphV2 getGraph(Long id) {
-        return graphV2Repository.findById(id).orElse(null);
+    public Graph getGraph(Long id) {
+        return graphRepository.findById(id).orElse(null);
     }
 
     public Long insertNewGraph(GraphDTO graphDTO) {
-        GraphV2 graph = new GraphV2();
+        Graph graph = new Graph();
         graph.setName(graphDTO.getName());
 
-        GraphV2 savedGraph = graphV2Repository.save(graph);
+        Graph savedGraph = graphRepository.save(graph);
 
         Set<NodeDTO> nodes = graphDTO.getNodes();
 
-        nodes.forEach(n -> nodeV2Service.insertNewNode(n, savedGraph));
+        nodes.forEach(n -> nodeService.insertNewNode(n, savedGraph));
 
         for (NodeDTO n : nodes) {
-            NodeV2 nodeV2 = nodeV2Service.insertNewNode(n, savedGraph);
+            Node node = nodeService.insertNewNode(n, savedGraph);
             List<NodeDTO> adjNodes = graphDTO.getAdjNodes(n);
-            List<NodeV2> nodeV2List = adjNodes.stream()
-                    .map(n2 -> nodeV2Service.insertNewNode(n2, savedGraph))
+            List<Node> nodeList = adjNodes.stream()
+                    .map(n2 -> nodeService.insertNewNode(n2, savedGraph))
                     .collect(Collectors.toList());
 
-            adjListService.insertAdjListForNode(nodeV2, nodeV2List);
+            adjListService.insertAdjListForNode(node, nodeList);
         }
 
         return graph.getId();

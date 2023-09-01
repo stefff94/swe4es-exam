@@ -12,10 +12,10 @@ public class AdjList {
     private Long id;
     @ManyToOne
     @JoinColumn(name = "node_from_id")
-    private NodeV2 from;
+    private Node from;
     @ManyToOne
     @JoinColumn(name = "node_to_id")
-    private NodeV2 to;
+    private Node to;
 
     public Long getId() {
         return id;
@@ -25,19 +25,19 @@ public class AdjList {
         this.id = id;
     }
 
-    public NodeV2 getFrom() {
+    public Node getFrom() {
         return from;
     }
 
-    public void setFrom(NodeV2 from) {
+    public void setFrom(Node from) {
         this.from = from;
     }
 
-    public NodeV2 getTo() {
+    public Node getTo() {
         return to;
     }
 
-    public void setTo(NodeV2 to) {
+    public void setTo(Node to) {
         this.to = to;
     }
 }

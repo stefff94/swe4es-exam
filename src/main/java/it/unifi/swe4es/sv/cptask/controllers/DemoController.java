@@ -4,7 +4,7 @@ import it.unifi.swe4es.sv.cptask.dto.GraphDTO;
 import it.unifi.swe4es.sv.cptask.dto.NodeDTO;
 import it.unifi.swe4es.sv.cptask.models.NodeType;
 import it.unifi.swe4es.sv.cptask.services.DemoGraphService;
-import it.unifi.swe4es.sv.cptask.services.GraphV2Service;
+import it.unifi.swe4es.sv.cptask.services.GraphService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,11 +16,11 @@ import java.util.List;
 @RequestMapping("/api/v1/demo")
 public class DemoController {
 
-  private final GraphV2Service graphService;
+  private final GraphService graphService;
   private final DemoGraphService demoGraphService;
 
   @Autowired
-  public DemoController(GraphV2Service graphService, DemoGraphService demoGraphService) {
+  public DemoController(GraphService graphService, DemoGraphService demoGraphService) {
     this.graphService = graphService;
     this.demoGraphService = demoGraphService;
   }
