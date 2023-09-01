@@ -1,14 +1,9 @@
 package it.unifi.swe4es.sv.cptask.mappers;
 
 import it.unifi.swe4es.sv.cptask.dto.GraphDTO;
-import it.unifi.swe4es.sv.cptask.dto.NodeDTO;
 import it.unifi.swe4es.sv.cptask.models.*;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
-
-import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 @Mapper
 public interface GraphMapper {
