@@ -11,6 +11,8 @@ import org.oristool.eulero.modelgeneration.blocksettings.WellNestedBlockSetting;
 import org.oristool.eulero.modelgeneration.blocksettings.XORBlockSetting;
 import org.oristool.eulero.modeling.*;
 import org.oristool.models.stpn.trees.StochasticTransitionFeature;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -19,11 +21,24 @@ import java.util.concurrent.ThreadLocalRandom;
 @Service
 public class EuleroService {
 
+    Logger logger = LoggerFactory.getLogger(EuleroService.class);
+
     public GraphDTO generateRandomGraph() {
         Set<BlockTypeSetting> level1Settings = new HashSet<>();
 
         // Level 1
-        BlockTypeSetting DAG = new DAGBlockSetting(1.);
+        // BlockTypeSetting DAG = new DAGBlockSetting(1.);
+
+        logger.info("Generating random DAG");
+
+        BlockTypeSetting DAG = new DAGBlockSetting(1.,
+                20, 30,
+                20, 30,
+                1,
+                1, 2);
+
+        logger.info("DAG initialization complete");
+
         level1Settings.add(DAG);
 
         // Level 2
