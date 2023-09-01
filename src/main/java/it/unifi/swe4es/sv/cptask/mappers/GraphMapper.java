@@ -15,29 +15,6 @@ public interface GraphMapper {
 
     GraphMapper INSTANCE = Mappers.getMapper(GraphMapper.class);
 
-    /*@Deprecated
-    default GraphDTO toDTO(Graph graph) {
-        Map<NodeDTO, List<NodeDTO>> adjList = new HashMap<>();
-
-        Set<GraphPath> graphPaths = graph.getGraphPath();
-
-        for (GraphPath gp : graphPaths) {
-
-            NodeDTO n = NodeMapper.INSTANCE.toDTO(gp.getNode());
-
-            List<NodeDTO> nList = gp.getElements().stream()
-                    .sorted(Comparator.comparingInt(GraphPathElement::getOrd))
-                    .map(GraphPathElement::getNode)
-                    .map(NodeMapper.INSTANCE::toDTO)
-                    .collect(Collectors.toList());
-
-
-            adjList.put(n, nList);
-        }
-
-        return new GraphDTO(adjList);
-    }*/
-
     default GraphDTO toDTO(GraphV2 graph) {
         GraphDTO graphDTO = new GraphDTO();
         graphDTO.addAllNodes(graph.getNodes().stream().map(NodeMapper.INSTANCE::toDTO));
@@ -48,42 +25,4 @@ public interface GraphMapper {
 
         return graphDTO;
     }
-
-    /*@Deprecated
-    default Graph fromDTO(GraphDTO graphDTO) {
-        Graph graph = new Graph();
-
-        Set<NodeDTO> nodes = graphDTO.getNodes();
-
-        Set<GraphPath> graphPaths = new HashSet<>();
-
-        for (NodeDTO node : nodes) {
-            GraphPath graphPath = new GraphPath();
-            graphPath.setNode(NodeMapper.INSTANCE.fromDTO(node));
-
-            Set<GraphPathElement> graphPathElements = new HashSet<>();
-            List<NodeDTO> adjNodes = graphDTO.getAdjNodes(node);
-            IntStream.range(0, adjNodes.size())
-                    .forEach(i -> {
-                        GraphPathElement graphPathElement = new GraphPathElement();
-                        graphPathElement.setNode(NodeMapper.INSTANCE.fromDTO(adjNodes.get(i)));
-                        graphPathElement.setOrd(i);
-
-                        graphPathElements.add(graphPathElement);
-                    });
-
-            graphPath.setElements(graphPathElements);
-            graphPaths.add(graphPath);
-        }
-
-        graph.setGraphPath(graphPaths);
-
-        return graph;
-    }*/
-
-    /*default GraphV2 fromDTO(GraphDTO graphDTO) {
-        //toDo: implement this
-
-        return null;
-    }*/
 }
