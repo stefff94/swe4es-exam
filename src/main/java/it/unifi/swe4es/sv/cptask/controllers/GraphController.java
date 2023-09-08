@@ -36,6 +36,14 @@ public class GraphController {
         return ResponseEntity.ok().body(graphDTO);
     }
 
+    @GetMapping("{id}/nodes/no")
+    public ResponseEntity<Integer> getGraphNodesNo(@PathVariable Long id) {
+        GraphDTO graphDTO = GraphMapper.INSTANCE.toDTO(graphService.getGraph(id));
+
+        return ResponseEntity.ok()
+                .body(graphDTO.getNodes().size());
+    }
+
     @PostMapping("/new")
     public ResponseEntity<Long> newGraph(@RequestBody(required = false) GraphDTO graphDTO) {
         Long graphId;

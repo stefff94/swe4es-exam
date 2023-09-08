@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import it.unifi.swe4es.sv.cptask.dto.GraphDTO;
 import it.unifi.swe4es.sv.cptask.dto.NodeDTO;
 import it.unifi.swe4es.sv.cptask.models.NodeType;
+import me.tongfei.progressbar.ProgressBar;
 import org.oristool.eulero.modelgeneration.RandomGenerator;
 import org.oristool.eulero.modelgeneration.blocksettings.BlockTypeSetting;
 import org.oristool.eulero.modelgeneration.blocksettings.DAGBlockSetting;
@@ -61,6 +62,8 @@ public class EuleroService {
         RandomGenerator randomGenerator = new RandomGenerator(feature, settings);
 
         org.oristool.eulero.modeling.DAG model = (DAG) randomGenerator.generateBlock(settings.size());
+
+        logger.info("DAG generation complete");
 
         GraphDTO graphDTO = new GraphDTO();
         graphDTO.setName(String.valueOf(UUID.randomUUID()));
